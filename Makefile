@@ -13,3 +13,6 @@ build:
 
 run: build	lint
 	./.bin/main
+
+docker-build:
+	docker build -t avito-httpserver .
