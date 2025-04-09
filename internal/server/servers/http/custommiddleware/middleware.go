@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	contextkey "github.com/Sanchir01/avito-testovoe/internal/context"
-	"github.com/Sanchir01/avito-testovoe/internal/feature/user"
+	contextkey "github.com/Sanchir01/golang-avito/internal/context"
+	"github.com/Sanchir01/golang-avito/internal/feature/user"
 )
 
 func AuthMiddleware(next http.Handler) http.Handler {

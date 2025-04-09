@@ -1,0 +1,30 @@
+version: "1"
+run:
+  timeout: 3m
+formatters:
+  enable:
+    - goimports
+    - golines
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/Sanchir01/golang-avito
+
+    golines:
+
+      max-len: 120
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - revive
+
+issues:
+  max-same-issues: 5
+  max-issues-per-linter: 0
+
+

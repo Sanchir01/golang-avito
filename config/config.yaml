@@ -1,0 +1,15 @@
+env: "local"
+
+database:
+  host: "localhost"
+  port: "5432"
+  user: "postgres"
+  dbname: "avito"
+  max_attempts: 10
+
+servers:
+  http:
+    port: "8080"
+    host: "0.0.0.0"
+    timeout: 4s
+    idle_timeout: 60s
