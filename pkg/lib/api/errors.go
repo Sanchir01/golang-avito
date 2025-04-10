@@ -2,6 +2,6 @@ package api
 
 import "errors"
 
-var ErrInsufficientCoins = errors.New("недостаточно coin на балансе")
+var InvalidPassword = errors.New("неправильный пароль")
 
-var ErrTransactionMyself = errors.New("нельзя отправлять деньги самому себе")
+var ErrCreateUser = errors.New("ошибка при создании пользователя")

@@ -17,7 +17,7 @@ func StartHTTTPHandlers(handlers *app.Handlers) http.Handler {
 			r.Post("/login", func(w http.ResponseWriter, request *http.Request) {
 				w.Write([]byte("login"))
 			})
-
+			r.Post("/register", handlers.UserHandler.RegistrationHandler)
 		})
 
 	})

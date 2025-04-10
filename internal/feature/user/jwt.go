@@ -12,13 +12,17 @@ import (
 )
 
 type Claims struct {
-	ID uuid.UUID `json:"id"`
+	ID    uuid.UUID `json:"id"`
+	Role  string    `json:"role"`
+	Email string    `json:"email"`
 	jwt.RegisteredClaims
 }
 
-func GenerateJwtToken(id uuid.UUID, expire time.Time) (string, error) {
+func GenerateJwtToken(id uuid.UUID, role, email string, expire time.Time) (string, error) {
 	claim := &Claims{
-		ID: id,
+		ID:    id,
+		Role:  role,
+		Email: email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expire),
 		},
