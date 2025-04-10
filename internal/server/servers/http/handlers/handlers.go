@@ -14,12 +14,10 @@ func StartHTTTPHandlers(handlers *app.Handlers) http.Handler {
 
 	router.Route("/api", func(r chi.Router) {
 		r.Route("/auth", func(r chi.Router) {
-			r.Post("/login", func(w http.ResponseWriter, request *http.Request) {
-				w.Write([]byte("login"))
-			})
+			r.Post("/login", handlers.UserHandler.LoginHandler)
 			r.Post("/register", handlers.UserHandler.RegistrationHandler)
+			r.Post("/dummyLogin", handlers.UserHandler.DammyLogin)
 		})
-
 	})
 
 	return router

@@ -8,6 +8,6 @@ type Services struct {
 
 func NewServices(r *Repositories, db *Database) *Services {
 	return &Services{
-		UserService: user.NewService(r.UserRepository),
+		UserService: user.NewService(r.UserRepository, db.PrimaryDB),
 	}
 }

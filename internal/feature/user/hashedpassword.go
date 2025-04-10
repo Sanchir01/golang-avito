@@ -5,16 +5,10 @@ import (
 )
 
 func GeneratePasswordHash(password string) ([]byte, error) {
-	passHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
-	}
-	return passHash, nil
+	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 }
 
-func VerifyPassword(dbpass []byte, hash string) bool {
-	if err := bcrypt.CompareHashAndPassword(dbpass, []byte(hash)); err != nil {
-		return false
-	}
-	return true
+func VerifyPassword(hash []byte, password string) bool {
+	err := bcrypt.CompareHashAndPassword(hash, []byte(password))
+	return err == nil
 }

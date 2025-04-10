@@ -53,6 +53,6 @@ func MustLoadConfig() *Config {
 		log.Fatalf("Failed to read config: %v", err)
 
 	}
-	
+
 	return &cfg
 }
