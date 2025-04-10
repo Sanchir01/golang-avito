@@ -11,7 +11,7 @@ lint:
 build:
 	go build -o ./.bin/main ./cmd/main/main.go
 
-run: build	lint
+run: build
 	./.bin/main
 
 docker-build:
