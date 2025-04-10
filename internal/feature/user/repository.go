@@ -11,3 +11,7 @@ type Repository struct {
 func NewRepository(primaryDB *pgxpool.Pool) *Repository {
 	return &Repository{primaryDB: primaryDB}
 }
+
+func (repo *Repository) Register() (*DBUser, error) {
+	return nil, nil
+}
