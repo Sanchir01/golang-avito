@@ -17,6 +17,12 @@ services:
       - POSTGRES_DATABASE=postgres
       - POSTGRES_PASSWORD=avito
       - POSTGRES_USER=postgres
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "19090:9090"
 #  httpserver:
 #    image: http-server-image:latest
 #    build:
@@ -32,5 +38,7 @@ services:
 volumes:
   dbhttp:
   dbgrpc:
+  prometheus:
 #  httpserver:
 #  grpcserver:
+

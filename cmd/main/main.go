@@ -23,13 +23,22 @@ func main() {
 	serve := httpserver.NewHTTPServer(env.Cfg.Servers.HTTPServer.Host, env.Cfg.Servers.HTTPServer.Port,
 		env.Cfg.Servers.HTTPServer.Timeout, env.Cfg.Servers.HTTPServer.IdleTimeout)
 
+	prometheusserver := httpserver.NewHTTPServer(
+		env.Cfg.Servers.PrometheusServer.Host, env.Cfg.Servers.PrometheusServer.Port,
+		env.Cfg.Servers.PrometheusServer.Timeout, env.Cfg.Servers.PrometheusServer.IdleTimeout)
+
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
 	green := color.New(color.FgGreen).SprintFunc()
 	env.Lg.Info(green("🚀 Server started successfully!"),
 		slog.String("time", time.Now().Format("2006-01-02 15:04:05")),
 		slog.String("port", env.Cfg.Servers.HTTPServer.Port),
 	)
+	env.Lg.Info(green("🚀  Prometheus Server started successfully!"),
+		slog.String("time", time.Now().Format("2006-01-02 15:04:05")),
+		slog.String("port", env.Cfg.Servers.PrometheusServer.Port),
+	)
 	defer cancel()
+
 	go func() {
 		if err := serve.Run(httphandlers.StartHTTTPHandlers(env.Handlers)); err != nil {
 			if !errors.Is(err, context.Canceled) {
@@ -37,9 +46,16 @@ func main() {
 				return
 			}
 		}
-
 	}()
 
+	go func() {
+		if err := prometheusserver.Run(httphandlers.StartPrometheusHandlers()); err != nil {
+			if !errors.Is(err, context.Canceled) {
+				env.Lg.Error("Listen server error", slog.String("error", err.Error()))
+				return
+			}
+		}
+	}()
 	<-ctx.Done()
 	if err := serve.Gracefull(ctx); err != nil {
 		env.Lg.Error("server gracefull")

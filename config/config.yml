@@ -13,3 +13,8 @@ servers:
     host: "0.0.0.0"
     timeout: 4s
     idle_timeout: 60s
+  prometheus:
+    port: "8081"
+    host: "0.0.0.0"
+    timeout: 4s
+    idle_timeout: 60s

@@ -4,7 +4,7 @@ CREATE TYPE city_enum AS ENUM (
     'Москва',
     'Санкт-Петербург',
     'Казань'
-    );
+);
 CREATE TABLE IF NOT EXISTS pvz(
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     registration_date TIMESTAMP NOT NULL DEFAULT NOW(),

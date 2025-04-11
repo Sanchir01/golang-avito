@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -14,6 +15,11 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate go tool github.com/vektra/mockery/v3@v3.0.2 --name=HandlerUser
+type HandlerUser interface {
+	LoginService(ctx context.Context, email string, password string) (string, error)
+	RegistrationsService(ctx context.Context, email, role, password string) (*DBUser, string, error)
+}
 type Handler struct {
 	Service *Service
 	Log     *slog.Logger

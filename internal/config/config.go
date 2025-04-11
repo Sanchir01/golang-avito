@@ -15,9 +15,16 @@ type Config struct {
 	PrimaryDB PrimaryDB `yaml:"database"`
 }
 type Servers struct {
-	HTTPServer HTTPServer `yaml:"http"`
+	HTTPServer       HTTPServer       `yaml:"http"`
+	PrometheusServer PrometheusServer `yaml:"prometheus"`
 }
 type HTTPServer struct {
+	Port        string        `yaml:"port"`
+	Host        string        `yaml:"host"`
+	Timeout     time.Duration `yaml:"timeout"`
+	IdleTimeout time.Duration `yaml:"idle_Timeout"`
+}
+type PrometheusServer struct {
 	Port        string        `yaml:"port"`
 	Host        string        `yaml:"host"`
 	Timeout     time.Duration `yaml:"timeout"`
@@ -34,24 +41,20 @@ type PrimaryDB struct {
 func MustLoadConfig() *Config {
 	if err := godotenv.Load(); err != nil {
 		log.Println("Warning: .env file not found, using system environment variables")
-
 	}
 
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
 		log.Fatal("CONFIG_PATH is not set in environment variables")
-
 	}
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Fatalf("Config file does not exist: %s", configPath)
-
 	}
 
 	var cfg Config
 	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
 		log.Fatalf("Failed to read config: %v", err)
-
 	}
 
 	return &cfg
