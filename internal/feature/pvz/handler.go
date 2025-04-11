@@ -23,7 +23,7 @@ func NewHandler(s *Service, lg *slog.Logger) *Handler {
 	}
 }
 
-func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreatePVZHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.create.pvz"
 	log := h.Log.With(
 		slog.String("op", op),
@@ -33,7 +33,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
 		log.Error("failed to decode request body", slog.Any("err", err))
-		render.JSON(w, r, api.Error("Ошибка при валидации данных"))
+		render.JSON(w, r, api.Error("Ошибка при валидации данных pvz"))
 		return
 	}
 	log.Info("request body decoded", slog.Any("request", req))

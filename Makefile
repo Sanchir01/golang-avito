@@ -15,11 +15,12 @@ POSTGRES_DSN := "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_H
 DIR_PG = ./migrations
 lint:
 	golangci-lint run --config=golangci.yaml
-
+swag:
+	swag init -g cmd/main/main.go
 build:
 	go build -o ./.bin/main ./cmd/main/main.go
 
-run: build
+run: build	swag
 	./.bin/main
 
 
@@ -35,5 +36,7 @@ migrations-down-pg:
 migrations-status-pg:
 	goose -dir $(DIR_PG) postgres  $(POSTGRES_DSN) status
 
+compose:
+	docker-compose up -d
 docker-build:
 	docker build -t avito-httpserver .

@@ -1,13 +1,13 @@
 package httphandlers
 
 import (
-	"net/http"
-
 	"github.com/Sanchir01/golang-avito/internal/app"
 	"github.com/Sanchir01/golang-avito/internal/server/servers/http/custommiddleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"net/http"
 )
 
 func StartHTTTPHandlers(handlers *app.Handlers) http.Handler {
@@ -18,14 +18,16 @@ func StartHTTTPHandlers(handlers *app.Handlers) http.Handler {
 		r.Route("/auth", func(r chi.Router) {
 			r.Post("/login", handlers.UserHandler.LoginHandler)
 			r.Post("/register", handlers.UserHandler.RegistrationHandler)
-			r.Post("/dummyLogin", handlers.UserHandler.DammyLogin)
+			r.Post("/dummyLogin", handlers.UserHandler.DummyLoginHandler)
 		})
 		r.Group(func(r chi.Router) {
-			r.Use(custommiddleware.AuthMiddleware("admin"))
-			r.Post("/pvz", handlers.PVZHandelr.Create)
+			r.Use(custommiddleware.AuthMiddleware("moderator"))
+			r.Post("/pvz", handlers.PVZHandelr.CreatePVZHandler)
 		})
 	})
-
+	router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8082/swagger/doc.json"),
+	))
 	return router
 }
 

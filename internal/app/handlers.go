@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/Sanchir01/golang-avito/internal/feature/acceptance"
 	"log/slog"
 
 	"github.com/Sanchir01/golang-avito/internal/feature/pvz"
@@ -8,8 +9,9 @@ import (
 )
 
 type Handlers struct {
-	UserHandler *user.Handler
-	PVZHandelr  *pvz.Handler
+	UserHandler       *user.Handler
+	PVZHandelr        *pvz.Handler
+	AcceptanceHandler *acceptance.Handler
 }
 
 func NewHandlers(s *Services, log *slog.Logger) *Handlers {
@@ -18,5 +20,6 @@ func NewHandlers(s *Services, log *slog.Logger) *Handlers {
 		PVZHandelr: pvz.NewHandler(
 			s.PVZService, log,
 		),
+		AcceptanceHandler: acceptance.NewHandler(s.AcceptanceService, log),
 	}
 }

@@ -59,7 +59,7 @@ func AuthMiddleware(allowedRoles ...string) func(http.Handler) http.Handler {
 				return
 			}
 
-			fmt.Println("middleware role", users, allowedRoles)
+			fmt.Println("middleware role", users.Role, "allowedRoles", allowedRoles)
 			if !hasRole(users.Role, allowedRoles) {
 				http.Error(w, "Forbidden", http.StatusForbidden)
 				return

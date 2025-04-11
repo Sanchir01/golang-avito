@@ -113,7 +113,7 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *Handler) DammyLogin(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DummyLoginHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.login"
 	log := h.Log.With(
 		slog.String("op", op),
