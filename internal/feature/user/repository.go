@@ -60,14 +60,15 @@ func (repo *Repository) GetUserByEmail(ctx context.Context, email string) (*DBUs
 
 	defer conn.Release()
 
-	query, arg, err := sq.Select("id,password").From("users").Where(sq.Eq{"email": email}).
+	query, arg, err := sq.Select("id,password,role").
+		From("users").Where(sq.Eq{"email": email}).
 		PlaceholderFormat(sq.Dollar).
 		ToSql()
 	if err != nil {
 		return nil, err
 	}
 	var user DBUser
-	if err := conn.QueryRow(ctx, query, arg...).Scan(&user.ID, &user.Password); err != nil {
+	if err := conn.QueryRow(ctx, query, arg...).Scan(&user.ID, &user.Password, &user.Role); err != nil {
 		return nil, err
 	}
 	return &user, nil

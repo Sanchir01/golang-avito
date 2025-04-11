@@ -51,5 +51,8 @@ func (s *Service) Create(ctx context.Context, createdDate time.Time, city string
 		return nil, err
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
 	return pvz, nil
 }

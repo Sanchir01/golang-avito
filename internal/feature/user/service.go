@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"time"
 
 	"github.com/Sanchir01/golang-avito/pkg/lib/api"
@@ -56,10 +57,14 @@ func (s *Service) RegistrationsService(ctx context.Context, email, role, passwor
 	if err != nil {
 		return nil, "", err
 	}
+
+	token, err := GenerateJwtToken(newUser.ID, newUser.Role, newUser.Email, time.Now().Add(14*24*time.Hour))
+	if err != nil {
+		return nil, "", err
+	}
 	if err := tx.Commit(ctx); err != nil {
 		return nil, "", err
 	}
-	token, err := GenerateJwtToken(newUser.ID, newUser.Role, newUser.Email, time.Now().Add(14*24*time.Hour))
 	return newUser, token, nil
 }
 
@@ -72,7 +77,8 @@ func (s *Service) LoginService(ctx context.Context, email string, password strin
 		oldUser.Password,
 		password,
 	)
-	if !verifypass {
+	slog.Error("old user login", oldUser.Role)
+	if verifypass == false {
 		return "", api.InvalidPassword
 	}
 	token, err := GenerateJwtToken(oldUser.ID, oldUser.Role, oldUser.Email, time.Now().Add(14*24*time.Hour))
