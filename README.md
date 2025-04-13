@@ -49,6 +49,7 @@
 1. **Клонирование репозитория**
    ```bash
    git clone https://github.com/yourusername/golang-avito.git
+   git clone https://github.com/Sanchir01/golang-avito-grpc --grpc-server
    cd golang-avito
    ```
 
