@@ -39,7 +39,7 @@ services:
   grpcserver:
     image: grpc-server-image:latest
     build:
-      context: ../golang-avito-grpc
+      context: ./golang-avito-grpc
     ports:
       - "3000:3000"
 volumes:
