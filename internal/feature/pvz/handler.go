@@ -1,9 +1,13 @@
 package pvz
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
+	"strconv"
+	"time"
 
+	grpcserver "github.com/Sanchir01/golang-avito/internal/server/servers/grpc"
 	"github.com/Sanchir01/golang-avito/pkg/lib/api"
 	sl "github.com/Sanchir01/golang-avito/pkg/lib/log"
 	"github.com/go-chi/chi/v5/middleware"
@@ -11,15 +15,23 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.52.2 --name=HandlersInterface --output ./mocks
+type HandlersInterface interface {
+	Create(ctx context.Context, createdDate time.Time, city string) (*DBPVZ, error)
+	GetAllPVZService(ctx context.Context, startDate, endDate time.Time, page, limit uint64) ([]*DBPVZWithReceptions, error)
+}
+
 type Handler struct {
-	Service *Service
+	Service HandlersInterface
+	GRPCPVZ *grpcserver.GRPCClientPVZ
 	Log     *slog.Logger
 }
 
-func NewHandler(s *Service, lg *slog.Logger) *Handler {
+func NewHandler(s HandlersInterface, lg *slog.Logger, pvzgrpc *grpcserver.GRPCClientPVZ) *Handler {
 	return &Handler{
 		Service: s,
 		Log:     lg,
+		GRPCPVZ: pvzgrpc,
 	}
 }
 
@@ -55,4 +67,90 @@ func (h *Handler) CreatePVZHandler(w http.ResponseWriter, r *http.Request) {
 			Response: api.OK(),
 			PVZ:      pvz,
 		})
+}
+
+func (h *Handler) GetAllPVZHandler(w http.ResponseWriter, r *http.Request) {
+	const op = "handlers.get.all.pvz"
+	log := h.Log.With(
+		slog.String("op", op),
+		slog.String("request_id", middleware.GetReqID(r.Context())),
+	)
+
+	startDateStr := r.URL.Query().Get("start_date")
+	endDateStr := r.URL.Query().Get("end_date")
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+
+	var startDate, endDate time.Time
+	var page, limit uint64 = 1, 20
+
+	if startDateStr != "" {
+		parsedStartDate, err := time.Parse(time.RFC3339, startDateStr)
+		if err != nil {
+			render.JSON(w, r, api.Error("invalid request"))
+			return
+		}
+		startDate = parsedStartDate
+	} else {
+		startDate = time.Now().AddDate(0, 0, -7)
+	}
+
+	if endDateStr != "" {
+		parsedEndDate, err := time.Parse(time.RFC3339, endDateStr)
+		if err != nil {
+			render.JSON(w, r, api.Error("invalid request"))
+			return
+		}
+		endDate = parsedEndDate
+	}
+
+	if pageStr != "" {
+		parsedPage, err := strconv.ParseUint(pageStr, 10, 64)
+		if err != nil || parsedPage < 1 {
+			render.JSON(w, r, api.Error("invalid request"))
+			return
+		}
+		page = parsedPage
+	}
+
+	if limitStr != "" {
+		parsedLimit, err := strconv.ParseUint(limitStr, 10, 64)
+		if err != nil || parsedLimit < 1 {
+			render.JSON(w, r, api.Error("invalid request"))
+			return
+		}
+		limit = parsedLimit
+	}
+
+	pvzs, err := h.Service.GetAllPVZService(r.Context(), startDate, endDate, page, limit)
+	if err != nil {
+		log.Error("failed to get all pvz", sl.Err(err))
+		render.JSON(w, r, api.Error("failed to get all pvz"))
+		return
+	}
+
+	render.JSON(w, r, ResponseGetAllPVZ{
+		Response: api.OK(),
+		PVZ:      pvzs,
+	})
+}
+
+func (h *Handler) GetAllGRPCPVZHandler(w http.ResponseWriter, r *http.Request) {
+	const op = "handlers.getall.pvz.grpc"
+	log := h.Log.With(
+		slog.String("op", op),
+		slog.String("request_id", middleware.GetReqID(r.Context())),
+	)
+
+	pvzs, err := h.GRPCPVZ.AllPVZHandler(r.Context())
+	if err != nil {
+		log.Error("failed to get all pvz", sl.Err(err))
+		render.JSON(w, r, api.Error("failed to get all pvz"))
+		return
+	}
+
+	render.JSON(w, r, ResponseGetAllPVZGRPC{
+		Response: api.OK(),
+		PVZ:      pvzs,
+	})
 }

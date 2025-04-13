@@ -18,3 +18,10 @@ servers:
     host: "0.0.0.0"
     timeout: 4s
     idle_timeout: 60s
+  grpc:
+    grpc_pvz:
+      host: "0.0.0.0"
+      port: "3000"
+      timeout: 5s
+      insecure: false
+      retries: 5

@@ -25,3 +25,14 @@ type ResponseCreateAcceptace struct {
 	PvzId    uuid.UUID `json:"pvz_id"`
 	Status   string    `json:"status"`
 }
+
+type RequestCloseAcceptance struct {
+	PVZId uuid.UUID `json:"pvz_id" validate:"required"`
+}
+type ResponseCloseAcceptance struct {
+	api.Response
+	ID       uuid.UUID `json:"id"`
+	Datetime time.Time `json:"date_time"`
+	PvzId    uuid.UUID `json:"pvz_id"`
+	Status   string    `json:"status"`
+}

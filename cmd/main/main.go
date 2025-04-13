@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -10,15 +11,16 @@ import (
 	"time"
 
 	"github.com/Sanchir01/golang-avito/internal/app"
+	grpcserver "github.com/Sanchir01/golang-avito/internal/server/servers/grpc"
 	httpserver "github.com/Sanchir01/golang-avito/internal/server/servers/http"
 	httphandlers "github.com/Sanchir01/golang-avito/internal/server/servers/http/handlers"
 	"github.com/fatih/color"
 )
 
 // @title 🚀 Avito testovoe
-// @version         1.0
+// @version 1.0
 // @description This is a sample server celler
-// @termsOfService  http://swagger.io/terms/
+// @termsOfService http://swagger.io/terms/
 
 // @host localhost:8080
 // @BasePath /
@@ -42,6 +44,13 @@ func main() {
 		env.Cfg.Servers.PrometheusServer.Timeout, env.Cfg.Servers.PrometheusServer.IdleTimeout)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
+	PVZGRPCClient, err := grpcserver.NewGRPCClient(ctx, env.Lg, env.Cfg.Servers.GRPCServer.GRPCPVZ.Port, env.Cfg.Servers.GRPCServer.GRPCPVZ.Host,
+		env.Cfg.Servers.GRPCServer.GRPCPVZ.Retries)
+	allpvzgrpc, err := PVZGRPCClient.AllPVZHandler(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(allpvzgrpc)
 	green := color.New(color.FgGreen).SprintFunc()
 	env.Lg.Info(green("🚀 Server started successfully!"),
 		slog.String("time", time.Now().Format("2006-01-02 15:04:05")),

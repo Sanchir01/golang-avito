@@ -2,7 +2,6 @@ package custommiddleware
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -18,21 +17,6 @@ var (
 			Subsystem: "http",
 			Name:      "request_total",
 			Help:      "Total number of HTTP requests",
-		},
-		[]string{"path", "method"},
-	)
-
-	requestDuration = prometheus.NewSummaryVec(
-		prometheus.SummaryOpts{
-			Namespace: "auth",
-			Subsystem: "http",
-			Name:      "request_duration_seconds",
-			Help:      "Duration of HTTP requests in seconds",
-			Objectives: map[float64]float64{
-				0.5:  0.05,
-				0.9:  0.01,
-				0.99: 0.001,
-			},
 		},
 		[]string{"path", "method"},
 	)
@@ -59,7 +43,6 @@ func AuthMiddleware(allowedRoles ...string) func(http.Handler) http.Handler {
 				return
 			}
 
-			fmt.Println("middleware role", users.Role, "allowedRoles", allowedRoles)
 			if !hasRole(users.Role, allowedRoles) {
 				http.Error(w, "Forbidden", http.StatusForbidden)
 				return

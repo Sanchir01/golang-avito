@@ -17,12 +17,23 @@ type Config struct {
 type Servers struct {
 	HTTPServer       HTTPServer       `yaml:"http"`
 	PrometheusServer PrometheusServer `yaml:"prometheus"`
+	GRPCServer       GRPCServers      `yaml:"grpc"`
 }
 type HTTPServer struct {
 	Port        string        `yaml:"port"`
 	Host        string        `yaml:"host"`
 	Timeout     time.Duration `yaml:"timeout"`
 	IdleTimeout time.Duration `yaml:"idle_Timeout"`
+}
+type GRPCServers struct {
+	GRPCPVZ GRPCPVZ `yaml:"grpc_pvz"`
+}
+type GRPCPVZ struct {
+	Host     string        `yaml:"host"`
+	Port     string        `yaml:"port"`
+	Timeout  time.Duration `yaml:"timeout"`
+	Retries  int           `yaml:"Retries"`
+	Insecure bool          `yaml:"insecure"`
 }
 type PrometheusServer struct {
 	Port        string        `yaml:"port"`

@@ -30,23 +30,22 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
 
-#  httpserver:
-#    image: http-server-image:latest
-#    build:
-#      context: ./golang-avito-http
-#    ports:
-#      - "3000:3000"
-#  grpcserver:
-#    image: grpc-server-image:latest
-#    build:
-#      context: ./golang-avito-grpc
-#    ports:
-#      - "8080:8080"
+  httpserver:
+    image: http-server-image:latest
+    build:
+      context: ./golang-avito-http
+    ports:
+      - "8080:8080"
+  grpcserver:
+    image: grpc-server-image:latest
+    build:
+      context: ../golang-avito-grpc
+    ports:
+      - "3000:3000"
 volumes:
   dbhttp:
   dbgrpc:
   prometheus:
   grafana-data:
-#  httpserver:
-#  grpcserver:
-
+  httpserver:
+  grpcserver:

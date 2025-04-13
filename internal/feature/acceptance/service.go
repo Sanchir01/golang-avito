@@ -11,6 +11,7 @@ import (
 
 type ServiceAcceptance interface {
 	CreateAcceptance(ctx context.Context, pvzId uuid.UUID, tx pgx.Tx) (*DBAcceptance, error)
+	CloseLastAcceptanceStatus(ctx context.Context, pvzID uuid.UUID, tx pgx.Tx) (*DBAcceptance, error)
 }
 
 type Service struct {
@@ -47,6 +48,42 @@ func (s *Service) CreateAcceptanceService(ctx context.Context, pvzId uuid.UUID) 
 
 	accep, err := s.repository.CreateAcceptance(ctx, pvzId, tx)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	return accep, nil
+}
+
+func (s *Service) CloseLastAcceptance(ctx context.Context, pvzID uuid.UUID) (*DBAcceptance, error) {
+	conn, err := s.primaryDB.Acquire(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Release()
+	tx, err := conn.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err != nil {
+			rollbackErr := tx.Rollback(ctx)
+			if rollbackErr != nil {
+				err = errors.Join(err, rollbackErr)
+				return
+			}
+		}
+	}()
+
+	accep, err := s.repository.CloseLastAcceptanceStatus(ctx, pvzID, tx)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
 		return nil, err
 	}
 	return accep, nil

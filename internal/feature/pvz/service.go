@@ -3,6 +3,7 @@ package pvz
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -11,6 +12,7 @@ import (
 
 type ServicePVZ interface {
 	CreatePVZ(ctx context.Context, registerDate time.Time, city string, tx pgx.Tx) (*DBPVZ, error)
+	GetAllPVZ(ctx context.Context, startDate, endDate time.Time, page, limit uint64) ([]*DBPVZWithReceptions, error)
 }
 
 type Service struct {
@@ -55,4 +57,14 @@ func (s *Service) Create(ctx context.Context, createdDate time.Time, city string
 		return nil, err
 	}
 	return pvz, nil
+}
+
+func (s *Service) GetAllPVZService(ctx context.Context, startDate, endDate time.Time, page, limit uint64) ([]*DBPVZWithReceptions, error) {
+
+	pvzs, err := s.repository.GetAllPVZ(ctx, startDate, endDate, page, limit)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("pvzs", pvzs)
+	return pvzs, nil
 }

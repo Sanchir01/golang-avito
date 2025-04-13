@@ -40,3 +40,6 @@ compose:
 	docker-compose up -d
 docker-build:
 	docker build -t avito-httpserver .
+
+test:
+	go test -v ./test/...

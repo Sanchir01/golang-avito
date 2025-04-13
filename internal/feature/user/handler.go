@@ -15,7 +15,7 @@ import (
 	"github.com/google/uuid"
 )
 
-//go:generate go tool github.com/vektra/mockery/v3@v3.0.2 --name=HandlerUser
+//go:generate go run github.com/vektra/mockery/v2@v2.52.2 --name=HandlerUser --output ./mocks
 type HandlerUser interface {
 	LoginService(ctx context.Context, email string, password string) (string, error)
 	RegistrationsService(ctx context.Context, email, role, password string) (*DBUser, string, error)
@@ -32,6 +32,17 @@ func NewHandler(s *Service, lg *slog.Logger) *Handler {
 	}
 }
 
+// @Summary Регистрация пользователя
+// @Tags auth
+// @Description Регистрация нового пользователя в системе
+// @Accept json
+// @Produce json
+// @Param request body RequestRegister true "Данные для регистрации"
+// @Success 200 {object} ResponseRegister
+// @Failure 400 {object} api.Response
+// @Failure 409 {object} api.Response
+// @Failure 500 {object} api.Response
+// @Router /api/auth/register [post]
 func (h *Handler) RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.register"
 	log := h.Log.With(

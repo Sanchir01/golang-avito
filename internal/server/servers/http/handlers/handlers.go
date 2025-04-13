@@ -28,7 +28,15 @@ func StartHTTTPHandlers(handlers *app.Handlers) http.Handler {
 		r.Group(func(r chi.Router) {
 			r.Use(custommiddleware.AuthMiddleware("employee"))
 			r.Post("/receptions", handlers.AcceptanceHandler.CreateAcceptanceHandler)
+			r.Post("/pvz/{pvzId}/close_last_reception", handlers.AcceptanceHandler.CloseLastAcceptanceHandler)
+			r.Post("/products", handlers.ProductHandler.CreateProductHandler)
+			r.Post("/products/{acceptanceID}/delete_last_product", handlers.ProductHandler.DeleteProductHandler)
 		})
+		r.Group(func(r chi.Router) {
+			r.Use(custommiddleware.AuthMiddleware("moderator", "employee"))
+			r.Get("/pvz", handlers.PVZHandelr.GetAllPVZHandler)
+		})
+		r.Get("/pvz_grpc", handlers.PVZHandelr.GetAllGRPCPVZHandler)
 	})
 	router.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),

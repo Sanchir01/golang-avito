@@ -11,3 +11,8 @@ var ErrUserAlreadyExists = errors.New("пользователь с таким em
 var ErrorCreateQueryString = errors.New("ошибка при создании запроса строки базы данных")
 
 var ErrCreatePvz = errors.New("ошибка при создании пункта выдачи заказов")
+
+var (
+	ErrNotFoundProduct    = errors.New("продукта с тами id нету")
+	ErrNotFoundAcceptance = errors.New("пункта выдачи с таким id нету")
+)
