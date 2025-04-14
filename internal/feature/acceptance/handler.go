@@ -31,6 +31,18 @@ func NewHandler(s AccptanceHandlerInterface, lg *slog.Logger) *Handler {
 	}
 }
 
+// @Summary Создания приемки товаров
+// @Security ApiKeyAuth
+// @Tags acceptance
+// @Description Создания приемки товаров только для сотрудников
+// @Accept json
+// @Produce json
+// @Param request body RequestCreateAcceptance true "Данные тестового логина"
+// @Success 200 {object} ResponseCreateAcceptace
+// @Failure 400 {object} api.Response
+// @Failure 409 {object} api.Response
+// @Failure 500 {object} api.Response
+// @Router /api/receptions [post]
 func (h *Handler) CreateAcceptanceHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.create.acceptance"
 	log := h.Log.With(
@@ -57,6 +69,7 @@ func (h *Handler) CreateAcceptanceHandler(w http.ResponseWriter, r *http.Request
 		render.JSON(w, r, api.Error("invalid request"))
 		return
 	}
+
 	render.JSON(w, r, ResponseCreateAcceptace{
 		Response: api.OK(),
 		Datetime: accep.CreatedAt,
@@ -66,6 +79,19 @@ func (h *Handler) CreateAcceptanceHandler(w http.ResponseWriter, r *http.Request
 	})
 }
 
+// @Summary Закрытие последней товарки
+// @Security ApiKeyAuth
+// @Tags acceptance
+// @Description Закрытие последней товарки только для сотрудников
+// @Param pvzId  path string true "pvz id"
+// @Accept json
+// @Produce json
+// @Param request body RequestCreateAcceptance true "Данные тестового логина"
+// @Success 200 {object} ResponseCreateAcceptace
+// @Failure 400 {object} api.Response
+// @Failure 409 {object} api.Response
+// @Failure 500 {object} api.Response
+// @Router /api/pvz/{pvzId}/close_last_reception [post]
 func (h *Handler) CloseLastAcceptanceHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.close.acceptance"
 	log := h.Log.With(

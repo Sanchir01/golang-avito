@@ -3,6 +3,7 @@ package httphandlers
 import (
 	"net/http"
 
+	_ "github.com/Sanchir01/golang-avito/docs"
 	"github.com/Sanchir01/golang-avito/internal/app"
 	"github.com/Sanchir01/golang-avito/internal/server/servers/http/custommiddleware"
 	"github.com/go-chi/chi/v5"

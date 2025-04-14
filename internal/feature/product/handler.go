@@ -31,6 +31,18 @@ func NewHandler(s *Service, lg *slog.Logger) *Handler {
 	}
 }
 
+// @Summary Создания одно продукта
+// @Security ApiKeyAuth
+// @Tags product
+// @Description Создания одно продукта только для сотрудников
+// @Accept json
+// @Produce json
+// @Param request body RequestCreateProduct true "Данные продукта"
+// @Success 200 {object} ResponseCreateProduct
+// @Failure 400 {object} api.Response
+// @Failure 409 {object} api.Response
+// @Failure 500 {object} api.Response
+// @Router /api/products [post]
 func (h *Handler) CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.create.product"
 	log := h.Log.With(
@@ -69,6 +81,18 @@ func (h *Handler) CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
+// @Summary Удаление последнего добавленного продукта
+// @Security ApiKeyAuth
+// @Tags product
+// @Description Удаление последнего добавленного продукта только для сотрудников
+// @Param acceptanceID  path string true "acceptance id"
+// @Accept json
+// @Produce json
+// @Success 200 {object} ResponseCreateProduct
+// @Failure 400 {object} api.Response
+// @Failure 409 {object} api.Response
+// @Failure 500 {object} api.Response
+// @Router /api/products/{acceptanceID}/delete_last_product [post]
 func (h *Handler) DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.delete.product"
 	log := h.Log.With(

@@ -35,6 +35,18 @@ func NewHandler(s HandlersInterface, lg *slog.Logger, pvzgrpc *grpcserver.GRPCCl
 	}
 }
 
+// @Summary Создание пункта выдачи
+// @Security ApiKeyAuth
+// @Tags pvz
+// @Description Создание пункта выдачи только для администраторов
+// @Accept json
+// @Produce json
+// @Param request body RequestCreatePVZ true "Данные тестового логина"
+// @Success 200 {object} ResponseCreatePVZ
+// @Failure 400 {object} api.Response
+// @Failure 409 {object} api.Response
+// @Failure 500 {object} api.Response
+// @Router /api/pvz [post]
 func (h *Handler) CreatePVZHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.create.pvz"
 	log := h.Log.With(
@@ -69,6 +81,17 @@ func (h *Handler) CreatePVZHandler(w http.ResponseWriter, r *http.Request) {
 		})
 }
 
+// @Summary Получение всех пвз со всеми приемками товаров и всеми товарами этих приемок
+// @Security ApiKeyAuth
+// @Tags pvz
+// @Description Получение всех пвз со всеми приемками товаров и всеми товарами этих приемок администраторов и сотрудников, надо включить grpc server
+// @Accept json
+// @Produce json
+// @Success 200 {object} ResponseGetAllPVZ
+// @Failure 400 {object} api.Response
+// @Failure 409 {object} api.Response
+// @Failure 500 {object} api.Response
+// @Router /api/pvz [get]
 func (h *Handler) GetAllPVZHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.get.all.pvz"
 	log := h.Log.With(
@@ -135,6 +158,17 @@ func (h *Handler) GetAllPVZHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// @Summary Получение всех пвз
+// @Security ApiKeyAuth
+// @Tags pvz
+// @Description Получение всех пвз только для администраторов и сотрудников, надо включить grpc server
+// @Accept json
+// @Produce json
+// @Success 200 {object} ResponseGetAllPVZ
+// @Failure 400 {object} api.Response
+// @Failure 409 {object} api.Response
+// @Failure 500 {object} api.Response
+// @Router /api/pvz_grpc [get]
 func (h *Handler) GetAllGRPCPVZHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.getall.pvz.grpc"
 	log := h.Log.With(

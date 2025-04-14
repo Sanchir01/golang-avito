@@ -85,6 +85,17 @@ func (h *Handler) RegistrationHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// @Summary Авторизация пользователя
+// @Tags auth
+// @Description Авторизация пользователя в системе
+// @Accept json
+// @Produce json
+// @Param request body RequestLogin true "Данные логина"
+// @Success 200 {object} ResponseRegister
+// @Failure 400 {object} api.Response
+// @Failure 409 {object} api.Response
+// @Failure 500 {object} api.Response
+// @Router /api/auth/login [post]
 func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.login"
 	log := h.Log.With(
@@ -124,6 +135,17 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// @Summary Получение токена
+// @Tags auth
+// @Description Авторизация пользователя в системе
+// @Accept json
+// @Produce json
+// @Param request body RequestLogin true "Данные тестового логина"
+// @Success 200 {object} RequestDummyLoggin
+// @Failure 400 {object} api.Response
+// @Failure 409 {object} api.Response
+// @Failure 500 {object} api.Response
+// @Router /api/auth/dummyLogin [post]
 func (h *Handler) DummyLoginHandler(w http.ResponseWriter, r *http.Request) {
 	const op = "handlers.login"
 	log := h.Log.With(

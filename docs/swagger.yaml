@@ -1,11 +1,149 @@
 basePath: /
 definitions:
+  acceptance.DBAcceptance:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      pvzId:
+        type: string
+      status:
+        type: string
+    type: object
+  acceptance.RequestCreateAcceptance:
+    properties:
+      pvz_id:
+        type: string
+    required:
+    - pvz_id
+    type: object
+  acceptance.ResponseCreateAcceptace:
+    properties:
+      date_time:
+        type: string
+      error:
+        type: string
+      id:
+        type: string
+      pvz_id:
+        type: string
+      status:
+        type: string
+    type: object
   api.Response:
     properties:
       error:
         type: string
       status:
         type: string
+    type: object
+  product.DBProduct:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      receptionID:
+        type: string
+      type:
+        type: string
+    type: object
+  product.RequestCreateProduct:
+    properties:
+      acception_id:
+        type: string
+      type:
+        type: string
+    type: object
+  product.ResponseCreateProduct:
+    properties:
+      acception_id:
+        type: string
+      created_at:
+        type: string
+      error:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+    type: object
+  pvz.DBPVZ:
+    properties:
+      city:
+        type: string
+      id:
+        type: string
+      registrationDate:
+        type: string
+    type: object
+  pvz.DBPVZWithReceptions:
+    properties:
+      pvz:
+        $ref: '#/definitions/pvz.DBPVZ'
+      receptions:
+        items:
+          $ref: '#/definitions/pvz.DBReceptionWithProducts'
+        type: array
+    type: object
+  pvz.DBReceptionWithProducts:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/product.DBProduct'
+        type: array
+      reception:
+        $ref: '#/definitions/acceptance.DBAcceptance'
+    type: object
+  pvz.RequestCreatePVZ:
+    properties:
+      city:
+        type: string
+      registration_date:
+        type: string
+    required:
+    - city
+    - registration_date
+    type: object
+  pvz.ResponseCreatePVZ:
+    properties:
+      error:
+        type: string
+      pvz:
+        $ref: '#/definitions/pvz.DBPVZ'
+      status:
+        type: string
+    type: object
+  pvz.ResponseGetAllPVZ:
+    properties:
+      error:
+        type: string
+      pvz:
+        items:
+          $ref: '#/definitions/pvz.DBPVZWithReceptions'
+        type: array
+      status:
+        type: string
+    type: object
+  user.RequestDummyLoggin:
+    properties:
+      role:
+        type: string
+    required:
+    - role
+    type: object
+  user.RequestLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
     type: object
   user.RequestRegister:
     properties:
@@ -46,6 +184,74 @@ info:
   title: "\U0001F680 Avito testovoe"
   version: "1.0"
 paths:
+  /api/auth/dummyLogin:
+    post:
+      consumes:
+      - application/json
+      description: Авторизация пользователя в системе
+      parameters:
+      - description: Данные тестового логина
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.RequestDummyLoggin'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Response'
+      summary: Получение токена
+      tags:
+      - auth
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Авторизация пользователя в системе
+      parameters:
+      - description: Данные логина
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.ResponseRegister'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Response'
+      summary: Авторизация пользователя
+      tags:
+      - auth
   /api/auth/register:
     post:
       consumes:
@@ -80,6 +286,250 @@ paths:
       summary: Регистрация пользователя
       tags:
       - auth
+  /api/products:
+    post:
+      consumes:
+      - application/json
+      description: Создания одно продукта только для сотрудников
+      parameters:
+      - description: Данные продукта
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/product.RequestCreateProduct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/product.ResponseCreateProduct'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Создания одно продукта
+      tags:
+      - product
+  /api/products/{acceptanceID}/delete_last_product:
+    post:
+      consumes:
+      - application/json
+      description: Удаление последнего добавленного продукта только для сотрудников
+      parameters:
+      - description: acceptance id
+        in: path
+        name: acceptanceID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/product.ResponseCreateProduct'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Удаление последнего добавленного продукта
+      tags:
+      - product
+  /api/pvz:
+    get:
+      consumes:
+      - application/json
+      description: Получение всех пвз со всеми приемками товаров и всеми товарами
+        этих приемок администраторов и сотрудников, надо включить grpc server
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pvz.ResponseGetAllPVZ'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение всех пвз со всеми приемками товаров и всеми товарами этих
+        приемок
+      tags:
+      - pvz
+    post:
+      consumes:
+      - application/json
+      description: Создание пункта выдачи только для администраторов
+      parameters:
+      - description: Данные тестового логина
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/pvz.RequestCreatePVZ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pvz.ResponseCreatePVZ'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Создание пункта выдачи
+      tags:
+      - pvz
+  /api/pvz/{pvzId}/close_last_reception:
+    post:
+      consumes:
+      - application/json
+      description: Закрытие последней товарки только для сотрудников
+      parameters:
+      - description: pvz id
+        in: path
+        name: pvzId
+        required: true
+        type: string
+      - description: Данные тестового логина
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/acceptance.RequestCreateAcceptance'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/acceptance.ResponseCreateAcceptace'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Закрытие последней товарки
+      tags:
+      - acceptance
+  /api/pvz_grpc:
+    get:
+      consumes:
+      - application/json
+      description: Получение всех пвз только для администраторов и сотрудников, надо
+        включить grpc server
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pvz.ResponseGetAllPVZ'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение всех пвз
+      tags:
+      - pvz
+  /api/receptions:
+    post:
+      consumes:
+      - application/json
+      description: Создания приемки товаров только для сотрудников
+      parameters:
+      - description: Данные тестового логина
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/acceptance.RequestCreateAcceptance'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/acceptance.ResponseCreateAcceptace'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Создания приемки товаров
+      tags:
+      - acceptance
 securityDefinitions:
   ApiKeyAuth:
     in: header
